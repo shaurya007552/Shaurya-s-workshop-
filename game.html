@@ -1,45 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Flappy Bird Game</title>
   <style>
-    * { margin: 0; padding: 0; }
-    canvas {
-      display: block;
+    body {
+      margin: 0;
       background: #000;
-      margin: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    canvas {
+      background: #70c5ce;
+      display: block;
     }
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="400" height="512"></canvas>
+  <canvas id="gameCanvas" width="320" height="480"></canvas>
 
   <script>
     const cvs = document.getElementById("gameCanvas");
     const ctx = cvs.getContext("2d");
 
-    const bird = new Image(); bird.src = "https://i.imgur.com/0VUsU2v.png";
-    const bg = new Image(); bg.src = "https://i.imgur.com/fUNRXQt.png";
-    const fg = new Image(); fg.src = "https://i.imgur.com/y74c15F.png";
-    const pipeNorth = new Image(); pipeNorth.src = "https://i.imgur.com/jkDfNBB.png";
-    const pipeSouth = new Image(); pipeSouth.src = "https://i.imgur.com/FKMYzqP.png";
+    // Load images
+    const bird = new Image();
+    bird.src = "https://i.imgur.com/sP6WxOw.png"; // bird image
 
+    const bg = new Image();
+    bg.src = "https://i.imgur.com/jxq6X7t.png"; // background
+
+    const fg = new Image();
+    fg.src = "https://i.imgur.com/SHK6Yj7.png"; // foreground
+
+    const pipeNorth = new Image();
+    pipeNorth.src = "https://i.imgur.com/bmaav1Z.png"; // pipe top
+
+    const pipeSouth = new Image();
+    pipeSouth.src = "https://i.imgur.com/VFl5m7P.png"; // pipe bottom
+
+    // Variables
     let gap = 120;
     let constant;
-    let birdX = 50;
-    let birdY = 150;
-    let gravity = 2.2;
+
+    let bX = 50;
+    let bY = 150;
+    let gravity = 1.5;
     let score = 0;
 
     let pipes = [];
-    pipes[0] = { x: cvs.width, y: 0 };
 
+    pipes[0] = {
+      x: cvs.width,
+      y: 0,
+    };
+
+    // Control the bird
     document.addEventListener("keydown", moveUp);
-    function moveUp() { birdY -= 30; }
+
+    function moveUp() {
+      bY -= 30;
+    }
 
     function draw() {
       ctx.drawImage(bg, 0, 0);
+
       for (let i = 0; i < pipes.length; i++) {
         constant = pipeNorth.height + gap;
         ctx.drawImage(pipeNorth, pipes[i].x, pipes[i].y);
@@ -47,17 +74,22 @@
 
         pipes[i].x--;
 
-        if (pipes[i].x === 125) {
+        if (pipes[i].x == 125) {
           pipes.push({
             x: cvs.width,
-            y: Math.floor(Math.random() * pipeNorth.height) - pipeNorth.height
+            y: Math.floor(Math.random() * pipeNorth.height) - pipeNorth.height,
           });
         }
 
-        if (birdX + bird.width >= pipes[i].x && birdX <= pipes[i].x + pipeNorth.width
-          && (birdY <= pipes[i].y + pipeNorth.height || birdY + bird.height >= pipes[i].y + constant)
-          || birdY + bird.height >= cvs.height - fg.height) {
-          location.reload(); // restart game
+        // Detect collision
+        if (
+          (bX + bird.width >= pipes[i].x &&
+            bX <= pipes[i].x + pipeNorth.width &&
+            (bY <= pipes[i].y + pipeNorth.height ||
+              bY + bird.height >= pipes[i].y + constant)) ||
+          bY + bird.height >= cvs.height - fg.height
+        ) {
+          location.reload(); // Reload game on collision
         }
 
         if (pipes[i].x == 5) {
@@ -66,15 +98,19 @@
       }
 
       ctx.drawImage(fg, 0, cvs.height - fg.height);
-      ctx.drawImage(bird, birdX, birdY);
-      birdY += gravity;
+      ctx.drawImage(bird, bX, bY);
+
+      bY += gravity;
+
       ctx.fillStyle = "#fff";
-      ctx.font = "20px Arial";
-      ctx.fillText("Score: " + score, 10, cvs.height - 20);
+      ctx.font = "20px Verdana";
+      ctx.fillText("Score : " + score, 10, cvs.height - 20);
 
       requestAnimationFrame(draw);
     }
+
+    // Start the game
     draw();
   </script>
 </body>
-</html>
+</html>        
