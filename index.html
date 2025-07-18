@@ -1,19 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Shaurya's Workshop</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Shaurya's Workshop</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+      padding-top: 50px;
+    }
+    h1 {
+      font-size: 48px;
+      animation: glow 2s infinite;
+    }
+    @keyframes glow {
+      0% { text-shadow: 0 0 5px white; }
+      50% { text-shadow: 0 0 20px white; }
+      100% { text-shadow: 0 0 5px white; }
+    }
+    a {
+      display: inline-block;
+      margin: 20px;
+      padding: 15px 30px;
+      background-color: white;
+      color: black;
+      font-size: 20px;
+      border-radius: 12px;
+      text-decoration: none;
+    }
+    a:hover {
+      background-color: #ddd;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="animated-text">Welcome to Shaurya's Workshop</h1>
-    <nav>
-      <a href="chatbot.html" class="btn">ChatGPT Bot</a>
-      <a href="game.html" class="btn">Play Flappy Bird</a>
-    </nav>
-  </div>
-  <script src="script.js"></script>
+  <h1>Shaurya's Workshop</h1>
+  <a href="flappy.html">🎮 Play Flappy Bird</a>
+  <a href="chatbot.html">🤖 Talk to Chatbot</a>
 </body>
 </html>
