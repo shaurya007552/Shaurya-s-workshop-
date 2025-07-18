@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ChatGPT Bot</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  #chatbox {
+    width: 100%;
+    height: 400px;
+    background: #222;
+    overflow-y: auto;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  #userinput {
+    width: 80%;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+  }
+  #sendbtn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background: #00ffff;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <div id="chatbox"></div>
+  <input type="text" id="userinput" placeholder="Type your message..." />
+  <button id="sendbtn">Send</button>
+
+  <script>
+    const chatbox = document.getElementById('chatbox');
+    const userinput = document.getElementById('userinput');
+    const sendbtn = document.getElementById('sendbtn');
+
+    function addMessage(sender, text) {
+      const msg = document.createElement('div');
+      msg.textContent = sender + ": " + text;
+      msg.style.margin = '10px 0';
+      msg.style.fontWeight = sender === 'You' ? 'bold' : 'normal';
+      chatbox.appendChild(msg);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function botReply(input) {
+      input = input.toLowerCase();
+      if (input.includes("hello") || input.includes("hi")) return "Hello! How can I help you?";
+      if (input.includes("how are you")) return "I'm good, thank you!";
+      if (input.includes("your name")) return "I'm Shaurya's ChatBot.";
+      if (input.includes("game")) return "You can play the Flappy Bird game from the main page.";
+      return "Sorry, I don't understand. Try asking something else!";
+    }
+
+    sendbtn.onclick = () => {
+      const input = userinput.value.trim();
+      if (input === "") return;
+      addMessage("You", input);
+      const reply = botReply(input);
+      setTimeout(() => addMessage("Bot", reply), 500);
+      userinput.value = "";
+    };
+
+    userinput.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        sendbtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
