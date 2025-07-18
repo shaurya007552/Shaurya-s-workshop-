@@ -1,59 +1,113 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flappy Bird - Shaurya's Workshop</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
-      background: skyblue;
-      font-family: sans-serif;
+      background: url('https://i.ibb.co/xzZw2CC/background.png') no-repeat center;
+      background-size: cover;
     }
     canvas {
       display: block;
       margin: auto;
-      background: url('https://i.imgur.com/OdL0XPt.png'); /* Sky with clouds */
-      background-size: cover;
     }
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="320" height="480"></canvas>
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");let frames = 0;
-const DEGREE = Math.PI / 180;
+<canvas id="game" width="320" height="480"></canvas>
 
-const sprite = new Image();
-sprite.src = "https://i.imgur.com/GzjU6Ha.png"; // Bird sprite
+<script>
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
 
-const bird = {
-  x: 50,
-  y: 150,
-  w: 34,
-  h: 26,
-  gravity: 0.25,
-  jump: 4.6,
-  speed: 0,
-  rotation: 0,
+  const birdImg = new Image();
+  birdImg.src = "https://i.ibb.co/Qr9sXzB/bird.png"; // Chidiya ki image
 
-  draw() {
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.rotation);
-    ctx.drawImage(sprite, 276, 112, this.w, this.h, -this.w/2, -this.h/2, this.w, this.h);
-    ctx.restore();
-  },
+  const bg = new Image();
+  bg.src = "https://i.ibb.co/xzZw2CC/background.png"; // Background image
 
-  flap() {
-    this.speed = -this.jump;
-  },
+  const pipeTop = new Image();
+  pipeTop.src = "https://i.ibb.co/NWcTXtJ/pipeTop.png";
 
-  update() {
-    this.speed += this.gravity;
-    this.y += this.speed;
+  const pipeBottom = new Image();
+  pipeBottom.src = "https://i.ibb.co/hyqrbcn/pipeBottom.png";
 
-    if (this.y + this.h / 2 >= canvas.height
+  const gap = 100;
+  let bird = {
+    x: 50,
+    y: 150,
+    gravity: 1.5,
+    velocity: 0
+  };
 
-    
+  let pipes = [];
+  pipes[0] = {
+    x: canvas.width,
+    y: Math.floor(Math.random() * -150) - 50
+  };
+
+  let score = 0;
+  let gameStarted = false;
+
+  function draw() {
+    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < pipes.length; i++) {
+      ctx.drawImage(pipeTop, pipes[i].x, pipes[i].y);
+      ctx.drawImage(pipeBottom, pipes[i].x, pipes[i].y + pipeTop.height + gap);
+
+      pipes[i].x--;
+
+      if (pipes[i].x === 150) {
+        pipes.push({
+          x: canvas.width,
+          y: Math.floor(Math.random() * -150) - 50
+        });
+      }
+
+      if (
+        bird.x + birdImg.width >= pipes[i].x &&
+        bird.x <= pipes[i].x + pipeTop.width &&
+        (bird.y <= pipes[i].y + pipeTop.height || bird.y + birdImg.height >= pipes[i].y + pipeTop.height + gap)
+      ) {
+        location.reload(); // Game over
+      }
+
+      if (pipes[i].x === 5) {
+        score++;
+      }
+    }
+
+    ctx.drawImage(birdImg, bird.x, bird.y);
+
+    if (gameStarted) {
+      bird.velocity += bird.gravity;
+      bird.y += bird.velocity;
+    }
+
+    if (bird.y + birdImg.height >= canvas.height) {
+      location.reload(); // Game over if hits ground
+    }
+
+    ctx.fillStyle = "#fff";
+    ctx.font = "20px Arial";
+    ctx.fillText("Score: " + score, 10, canvas.height - 20);
+
+    requestAnimationFrame(draw);
+  }
+
+  document.addEventListener("keydown", flap);
+  document.addEventListener("touchstart", flap);
+
+  function flap() {
+    if (!gameStarted) {
+      gameStarted = true;
+      draw();
+    }
+    bird.velocity = -15;
+  }
+</script>
+</body>
+</html>
