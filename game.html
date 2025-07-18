@@ -1,125 +1,59 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en">
 <head>
-  <title>Flappy Bird Game</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flappy Bird - Shaurya's Workshop</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
-      background-color: #70c5ce;
+      background: skyblue;
       font-family: sans-serif;
     }
     canvas {
       display: block;
-      margin: 0 auto;
-      background-color: #fff;
-      border: 5px solid #000;
+      margin: auto;
+      background: url('https://i.imgur.com/OdL0XPt.png'); /* Sky with clouds */
+      background-size: cover;
     }
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="400" height="600"></canvas>
+  <canvas id="gameCanvas" width="320" height="480"></canvas>
   <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");let frames = 0;
+const DEGREE = Math.PI / 180;
 
-    let bird = {
-      x: 50,
-      y: 150,
-      width: 20,
-      height: 20,
-      gravity: 0.6,
-      lift: -10,
-      velocity: 0
-    };
+const sprite = new Image();
+sprite.src = "https://i.imgur.com/GzjU6Ha.png"; // Bird sprite
 
-    let pipes = [];
-    let score = 0;
-    let totalPipes = 15;
+const bird = {
+  x: 50,
+  y: 150,
+  w: 34,
+  h: 26,
+  gravity: 0.25,
+  jump: 4.6,
+  speed: 0,
+  rotation: 0,
 
-    function setupPipes() {
-      pipes = [];
-      for (let i = 0; i < totalPipes; i++) {
-        let spacing = 120;
-        let top = Math.floor(Math.random() * (canvas.height / 2));
-        let bottom = canvas.height - top - spacing;
-        let x = i * 300 + 400;
-        pipes.push({ x: x, top: top, bottom: bottom, width: 40 });
-      }
-    }
+  draw() {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+    ctx.drawImage(sprite, 276, 112, this.w, this.h, -this.w/2, -this.h/2, this.w, this.h);
+    ctx.restore();
+  },
 
-    setupPipes();
+  flap() {
+    this.speed = -this.jump;
+  },
 
-    function drawBird() {
-      ctx.fillStyle = "yellow";
-      ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
-    }
+  update() {
+    this.speed += this.gravity;
+    this.y += this.speed;
 
-    function drawPipes() {
-      ctx.fillStyle = "green";
-      pipes.forEach(p => {
-        ctx.fillRect(p.x, 0, p.width, p.top);
-        ctx.fillRect(p.x, canvas.height - p.bottom, p.width, p.bottom);
-      });
-    }
+    if (this.y + this.h / 2 >= canvas.height
 
-    function drawScore() {
-      ctx.fillStyle = "black";
-      ctx.font = "24px Arial";
-      ctx.fillText("Score: " + score, 10, 30);
-    }
-
-    function update() {
-      bird.velocity += bird.gravity;
-      bird.y += bird.velocity;
-
-      pipes.forEach(p => {
-        p.x -= 2;
-
-        if (p.x + p.width < bird.x && !p.passed) {
-          score++;
-          p.passed = true;
-        }
-
-        if (
-          bird.x < p.x + p.width &&
-          bird.x + bird.width > p.x &&
-          (bird.y < p.top || bird.y + bird.height > canvas.height - p.bottom)
-        ) {
-          resetGame();
-        }
-      });
-
-      if (bird.y > canvas.height || bird.y < 0) {
-        resetGame();
-      }
-    }
-
-    function resetGame() {
-      bird.y = 150;
-      bird.velocity = 0;
-      score = 0;
-      setupPipes();
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawBird();
-      drawPipes();
-      drawScore();
-    }
-
-    function gameLoop() {
-      update();
-      draw();
-      requestAnimationFrame(gameLoop);
-    }
-
-    document.addEventListener('keydown', function () {
-      bird.velocity = bird.lift;
-    });
-
-    gameLoop();
-  </script>
-</body>
-</html>
+    
