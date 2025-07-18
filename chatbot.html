@@ -1,84 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>ChatGPT Bot</title>
-<style>
-  body {
-    background-color: black;
-    color: white;
-    font-family: Arial, sans-serif;
-    padding: 20px;
-  }
-  #chatbox {
-    width: 100%;
-    height: 400px;
-    background: #222;
-    overflow-y: auto;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-  }
-  #userinput {
-    width: 80%;
-    padding: 10px;
-    border-radius: 6px;
-    border: none;
-  }
-  #sendbtn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    background: #00ffff;
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Shaurya's Chatbot</title>
+  <style>
+    body { background-color: black; color: white; font-size: 20px; font-family: Arial; text-align: center; padding: 30px; }
+    #chatBox { width: 90%; margin: auto; padding: 10px; background: #222; border-radius: 10px; }
+    input { padding: 10px; font-size: 18px; width: 80%; }
+    button { padding: 10px 20px; font-size: 18px; background-color: #0f0; border: none; cursor: pointer; }
+  </style>
 </head>
 <body>
-  <div id="chatbox"></div>
-  <input type="text" id="userinput" placeholder="Type your message..." />
-  <button id="sendbtn">Send</button>
+  <h1>Welcome to Shaurya's Chatbot</h1>
+  <div id="chatBox"></div><br>
+  <input type="text" id="userInput" placeholder="Ask something...">
+  <button onclick="talk()">Send</button>
 
   <script>
-    const chatbox = document.getElementById('chatbox');
-    const userinput = document.getElementById('userinput');
-    const sendbtn = document.getElementById('sendbtn');
+    function talk() {
+      let input = document.getElementById("userInput").value.toLowerCase();
+      let response = "Sorry, I don't know that.";
 
-    function addMessage(sender, text) {
-      const msg = document.createElement('div');
-      msg.textContent = sender + ": " + text;
-      msg.style.margin = '10px 0';
-      msg.style.fontWeight = sender === 'You' ? 'bold' : 'normal';
-      chatbox.appendChild(msg);
-      chatbox.scrollTop = chatbox.scrollHeight;
+      if (input.includes("prime minister")) response = "Narendra Modi is the Prime Minister of India.";
+      else if (input.includes("full form of upsc")) response = "UPSC means Union Public Service Commission.";
+      else if (input.includes("capital of india")) response = "New Delhi is the capital of India.";
+      else if (input.includes("full form of isro")) response = "ISRO means Indian Space Research Organisation.";
+      else if (input.includes("hello")) response = "Hi, I'm your mini chatbot!";
+      else if (input.includes("country")) response = "India, USA, China, Japan are countries.";
+
+      document.getElementById("chatBox").innerHTML += "<p><b>You:</b> " + input + "<br><b>Bot:</b> " + response + "</p>";
+      document.getElementById("userInput").value = "";
     }
-
-    function botReply(input) {
-      input = input.toLowerCase();
-      if (input.includes("hello") || input.includes("hi")) return "Hello! How can I help you?";
-      if (input.includes("how are you")) return "I'm good, thank you!";
-      if (input.includes("your name")) return "I'm Shaurya's ChatBot.";
-      if (input.includes("game")) return "You can play the Flappy Bird game from the main page.";
-      return "Sorry, I don't understand. Try asking something else!";
-    }
-
-    sendbtn.onclick = () => {
-      const input = userinput.value.trim();
-      if (input === "") return;
-      addMessage("You", input);
-      const reply = botReply(input);
-      setTimeout(() => addMessage("Bot", reply), 500);
-      userinput.value = "";
-    };
-
-    userinput.addEventListener("keypress", function(event) {
-      if (event.key === "Enter") {
-        sendbtn.click();
-      }
-    });
   </script>
 </body>
 </html>
