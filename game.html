@@ -6,12 +6,13 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: url('https://i.ibb.co/xzZw2CC/background.png') no-repeat center;
-      background-size: cover;
+      background: #70c5ce;
     }
     canvas {
       display: block;
       margin: auto;
+      background: url('https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/background-day.png');
+      background-size: cover;
     }
   </style>
 </head>
@@ -23,16 +24,13 @@
   const ctx = canvas.getContext("2d");
 
   const birdImg = new Image();
-  birdImg.src = "https://i.ibb.co/Qr9sXzB/bird.png"; // Chidiya ki image
-
-  const bg = new Image();
-  bg.src = "https://i.ibb.co/xzZw2CC/background.png"; // Background image
+  birdImg.src = "https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/yellowbird-midflap.png";
 
   const pipeTop = new Image();
-  pipeTop.src = "https://i.ibb.co/NWcTXtJ/pipeTop.png";
+  pipeTop.src = "https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/pipe-green-top.png";
 
   const pipeBottom = new Image();
-  pipeBottom.src = "https://i.ibb.co/hyqrbcn/pipeBottom.png";
+  pipeBottom.src = "https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/pipe-green-bottom.png";
 
   const gap = 100;
   let bird = {
@@ -52,7 +50,7 @@
   let gameStarted = false;
 
   function draw() {
-    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < pipes.length; i++) {
       ctx.drawImage(pipeTop, pipes[i].x, pipes[i].y);
