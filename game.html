@@ -1,113 +1,150 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flappy Bird</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: url('https://i.ibb.co/58kYbD8/background-day.png') repeat-x;
-      background-size: cover;
-    }
-    canvas {
-      display: block;
-      margin: 0 auto;
-      background: transparent;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Shaurya's Flappy Bird</title>
+<style>
+  body { margin:0; background: #000; color: #fff; text-align: center; font-family: Arial, sans-serif; }
+  canvas { background: url('https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/background-day.png') no-repeat center center; background-size: cover; display: block; margin: 0 auto; }
+  #score { font-size: 32px; margin-top: 10px; }
+</style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="320" height="480"></canvas>
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");const birdImg = new Image();
-birdImg.src = "https://i.ibb.co/QdpBzGq/bird.png";
+<h1>Shaurya's Flappy Bird Game</h1>
+<canvas id="gameCanvas" width="320" height="480"></canvas>
+<div id="score">Score: 0</div>
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
-const bg = new Image();
-bg.src = "https://i.ibb.co/58kYbD8/background-day.png";
+let frames = 0;
+const DEGREE = Math.PI/180;
 
-const pipeNorth = new Image();
-pipeNorth.src = "https://i.ibb.co/zPFSLHP/pipe-green.png";
-const pipeSouth = new Image();
-pipeSouth.src = "https://i.ibb.co/jzfLXB3/pipe-green-flip.png";
+// Load images from URLs
+const sprite = {};
+sprite.bird = new Image();
+sprite.bird.src = 'https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/yellowbird-midflap.png';
+sprite.pipeNorth = new Image();
+sprite.pipeNorth.src = 'https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/pipe-green.png';
+sprite.base = new Image();
+sprite.base.src = 'https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/base.png';
 
-let gap = 85;
-let constant;
-let birdX = 50;
-let birdY = 150;
-let gravity = 1.5;
-let velocity = 0;
-
+const gap = 120;
 const bird = {
-  width: 38,
-  height: 26
+  x: 50,
+  y: 150,
+  width: 34,
+  height: 24,
+  gravity: 0.25,
+  lift: -4.6,
+  velocity: 0,
+  rotation: 0,
+  draw() {
+    ctx.save();
+    ctx.translate(this.x + this.width/2, this.y + this.height/2);
+    ctx.rotate(this.rotation);
+    ctx.drawImage(sprite.bird, -this.width/2, -this.height/2, this.width, this.height);
+    ctx.restore();
+  },
+  update() {
+    this.velocity += this.gravity;
+    this.y += this.velocity;
+    if (this.y + this.height >= canvas.height - 112) {
+      this.y = canvas.height - 112 - this.height;
+      this.velocity = 0;
+    }
+    if (this.velocity >= this.lift) {
+      this.rotation = Math.min(Math.PI/4, this.rotation + 0.03);
+    } else {
+      this.rotation = -0.3;
+    }
+  },
+  flap() {
+    this.velocity = this.lift;
+  }
 };
-
-document.addEventListener("keydown", fly);
-document.addEventListener("click", fly);
-
-function fly() {
-  velocity = -20;
-}
 
 const pipes = [];
 pipes[0] = {
   x: canvas.width,
-  y: Math.floor(Math.random() * pipeNorth.height) - pipeNorth.height
+  y: -150
 };
 
 let score = 0;
 
 function draw() {
-  ctx.drawImage(bg, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  for (let i = 0; i < pipes.length; i++) {
-    constant = pipeNorth.height + gap;
-    ctx.drawImage(pipeNorth, pipes[i].x, pipes[i].y);
-    ctx.drawImage(pipeSouth, pipes[i].x, pipes[i].y + constant);
-
-    pipes[i].x--;
-
-    if (pipes[i].x === 125) {
-      pipes.push({
-        x: canvas.width,
-        y: Math.floor(Math.random() * pipeNorth.height) - pipeNorth.height
-      });
-    }
-
-    if (
-      birdX + bird.width >= pipes[i].x &&
-      birdX <= pipes[i].x + pipeNorth.width &&
-      (birdY <= pipes[i].y + pipeNorth.height ||
-        birdY + bird.height >= pipes[i].y + constant)
-    ) {
-      location.reload(); // Game over
-    }
-
-    if (pipes[i].x === 5) {
-      score++;
-    }
+  // Draw pipes
+  for(let i = 0; i < pipes.length; i++) {
+    let p = pipes[i];
+    ctx.drawImage(sprite.pipeNorth, p.x, p.y, 52, 320);
+    ctx.drawImage(sprite.pipeNorth, p.x, p.y + 320 + gap, 52, 320);
   }
 
-  ctx.drawImage(birdImg, birdX, birdY);
+  // Draw base
+  ctx.drawImage(sprite.base, 0, canvas.height - 112, canvas.width, 112);
 
-  velocity += gravity;
-  birdY += velocity;
+  // Draw bird
+  bird.draw();
 
-  if (birdY + bird.height > canvas.height) {
-    location.reload();
-  }
-
-  ctx.fillStyle = "#000";
-  ctx.font = "20px Arial";
-  ctx.fillText("Score: " + score, 10, canvas.height - 20);
-
-  requestAnimationFrame(draw);
+  // Draw score
+  document.getElementById('score').innerText = "Score: " + score;
 }
 
-draw();
+function update() {
+  frames++;
 
-  </script>
+  bird.update();
+
+  if (frames % 90 === 0) {
+    pipes.push({
+      x: canvas.width,
+      y: -Math.floor(Math.random() * 200) - 50
+    });
+  }
+
+  for(let i = 0; i < pipes.length; i++) {
+    pipes[i].x -= 2;
+
+    // Detect collision
+    if (bird.x + bird.width > pipes[i].x && bird.x < pipes[i].x + 52) {
+      if (bird.y < pipes[i].y + 320 || bird.y + bird.height > pipes[i].y + 320 + gap) {
+        resetGame();
+      }
+    }
+
+    if (pipes[i].x + 52 < 0) {
+      pipes.splice(i, 1);
+      score++;
+      i--;
+    }
+  }
+
+  // Bird hits ground
+  if (bird.y + bird.height >= canvas.height - 112) {
+    resetGame();
+  }
+}
+
+function resetGame() {
+  alert("Game Over! Your Score: " + score);
+  bird.y = 150;
+  bird.velocity = 0;
+  pipes.length = 0;
+  pipes[0] = { x: canvas.width, y: -150 };
+  score = 0;
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+canvas.addEventListener('click', () => bird.flap());
+
+loop();
+</script>
 </body>
 </html>
