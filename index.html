@@ -2,171 +2,152 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Shaurya's Flappy Bird Game</title>
+<title>Shaurya's Flappy Bird</title>
 <style>
-  body { margin: 0; background: black; color: white; font-family: Arial, sans-serif; text-align: center; }
-  h1 { margin-top: 20px; }
-  canvas { 
-    display: block; 
-    margin: 20px auto; 
-    background: url('https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/background-day.png') no-repeat center center; 
+  body {
+    margin: 0; 
+    background-color: black; 
+    color: white; 
+    font-family: Arial, sans-serif; 
+    text-align: center;
+  }
+  h1 {
+    margin-top: 20px;
+  }
+  canvas {
+    display: block;
+    margin: 20px auto;
+    background: url('https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/background-day.png') no-repeat center center;
     background-size: cover;
-    border: 2px solid white;
-    width: 480px;  /* bada size for better visibility */
+    border: 3px solid white;
+    width: 480px;
     height: 720px;
   }
   #score {
     font-size: 28px;
-    margin-bottom: 20px;
+    margin: 20px;
   }
 </style>
 </head>
 <body>
-
 <h1>Welcome to Shaurya's Flappy Bird Game</h1>
 <canvas id="gameCanvas" width="480" height="720"></canvas>
 <div id="score">Score: 0</div>
 
 <script>
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
-  // Images URLs
-  const images = {
-    bird: 'https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/yellowbird-midflap.png',
-    pipe: 'https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/pipe-green.png',
-    base: 'https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/base.png'
-  };
+// Images
+const birdImg = new Image();
+birdImg.src = 'https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/yellowbird-midflap.png';
+const pipeImg = new Image();
+pipeImg.src = 'https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/pipe-green.png';
+const baseImg = new Image();
+baseImg.src = 'https://raw.githubusercontent.com/sourabhv/FlapPyBird/master/assets/sprites/base.png';
 
-  // Load Images
-  const birdImg = new Image();
-  birdImg.src = images.bird;
-  const pipeImg = new Image();
-  pipeImg.src = images.pipe;
-  const baseImg = new Image();
-  baseImg.src = images.base;
+const gap = 150;
+let score = 0;
+let frames = 0;
+let pipes = [{ x: canvas.width, y: -200 }];
 
-  // Game variables
-  const gap = 150;
-  let score = 0;
-  let frames = 0;
-  let pipes = [];
-
-  // Bird object
-  const bird = {
-    x: 100,
-    y: 300,
-    width: 48,
-    height: 34,
-    gravity: 0.4,
-    lift: -7,
-    velocity: 0,
-    rotation: 0,
-    draw() {
-      ctx.save();
-      ctx.translate(this.x + this.width/2, this.y + this.height/2);
-      ctx.rotate(this.rotation);
-      ctx.drawImage(birdImg, -this.width/2, -this.height/2, this.width, this.height);
-      ctx.restore();
-    },
-    update() {
-      this.velocity += this.gravity;
-      this.y += this.velocity;
-      if (this.y + this.height >= canvas.height - 112) {
-        this.y = canvas.height - 112 - this.height;
-        this.velocity = 0;
-      }
-      if (this.velocity >= this.lift) {
-        this.rotation = Math.min(Math.PI/4, this.rotation + 0.05);
-      } else {
-        this.rotation = -0.3;
-      }
-    },
-    flap() {
-      this.velocity = this.lift;
+const bird = {
+  x: 100,
+  y: 300,
+  width: 48,
+  height: 34,
+  gravity: 0.4,
+  lift: -7,
+  velocity: 0,
+  rotation: 0,
+  draw() {
+    ctx.save();
+    ctx.translate(this.x + this.width/2, this.y + this.height/2);
+    ctx.rotate(this.rotation);
+    ctx.drawImage(birdImg, -this.width/2, -this.height/2, this.width, this.height);
+    ctx.restore();
+  },
+  update() {
+    this.velocity += this.gravity;
+    this.y += this.velocity;
+    if (this.y + this.height >= canvas.height - 112) {
+      this.y = canvas.height - 112 - this.height;
+      this.velocity = 0;
     }
-  };
-
-  // Initialize first pipe
-  pipes.push({ x: canvas.width, y: -200 });
-
-  // Draw everything
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Pipes
-    for(let i = 0; i < pipes.length; i++) {
-      let p = pipes[i];
-      ctx.drawImage(pipeImg, p.x, p.y, 80, 480);
-      ctx.drawImage(pipeImg, p.x, p.y + 480 + gap, 80, 480);
+    if (this.velocity >= this.lift) {
+      this.rotation = Math.min(Math.PI/4, this.rotation + 0.05);
+    } else {
+      this.rotation = -0.3;
     }
+  },
+  flap() {
+    this.velocity = this.lift;
+  }
+};
 
-    // Base
-    ctx.drawImage(baseImg, 0, canvas.height - 112, canvas.width, 112);
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Pipes
+  for (let i = 0; i < pipes.length; i++) {
+    const p = pipes[i];
+    ctx.drawImage(pipeImg, p.x, p.y, 80, 480);
+    ctx.drawImage(pipeImg, p.x, p.y + 480 + gap, 80, 480);
+  }
+  // Base
+  ctx.drawImage(baseImg, 0, canvas.height - 112, canvas.width, 112);
+  // Bird
+  bird.draw();
+  // Score
+  document.getElementById('score').innerText = "Score: " + score;
+}
 
-    // Bird
-    bird.draw();
+function update() {
+  frames++;
+  bird.update();
 
-    // Score
-    document.getElementById('score').innerText = "Score: " + score;
+  if (frames % 90 === 0) {
+    pipes.push({ x: canvas.width, y: -Math.floor(Math.random() * 300) - 150 });
   }
 
-  // Update game state
-  function update() {
-    frames++;
-    bird.update();
-
-    if (frames % 90 === 0) {
-      pipes.push({ x: canvas.width, y: -Math.floor(Math.random() * 300) - 150 });
-    }
-
-    for(let i = 0; i < pipes.length; i++) {
-      pipes[i].x -= 3;
-
-      // Collision detection
-      if (bird.x + bird.width > pipes[i].x && bird.x < pipes[i].x + 80) {
-        if (bird.y < pipes[i].y + 480 || bird.y + bird.height > pipes[i].y + 480 + gap) {
-          resetGame();
-        }
-      }
-
-      // Remove off-screen pipes
-      if (pipes[i].x + 80 < 0) {
-        pipes.splice(i, 1);
-        score++;
-        i--;
+  for (let i = 0; i < pipes.length; i++) {
+    pipes[i].x -= 3;
+    // Collision
+    if (bird.x + bird.width > pipes[i].x && bird.x < pipes[i].x + 80) {
+      if (bird.y < pipes[i].y + 480 || bird.y + bird.height > pipes[i].y + 480 + gap) {
+        resetGame();
       }
     }
-
-    // Bird hits ground
-    if (bird.y + bird.height >= canvas.height - 112) {
-      resetGame();
+    // Remove pipes off screen
+    if (pipes[i].x + 80 < 0) {
+      pipes.splice(i, 1);
+      score++;
+      i--;
     }
   }
-
-  // Reset game on collision/game over
-  function resetGame() {
-    alert("Game Over! Your Score: " + score);
-    bird.y = 300;
-    bird.velocity = 0;
-    pipes = [{ x: canvas.width, y: -200 }];
-    score = 0;
-    frames = 0;
+  // Bird hits ground
+  if (bird.y + bird.height >= canvas.height - 112) {
+    resetGame();
   }
+}
 
-  // Game loop
-  function loop() {
-    update();
-    draw();
-    requestAnimationFrame(loop);
-  }
+function resetGame() {
+  alert("Game Over! Your Score: " + score);
+  bird.y = 300;
+  bird.velocity = 0;
+  pipes = [{ x: canvas.width, y: -200 }];
+  score = 0;
+  frames = 0;
+}
 
-  // Controls
-  canvas.addEventListener('click', () => bird.flap());
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
 
-  // Start game loop
-  loop();
+canvas.addEventListener('click', () => bird.flap());
 
+loop();
 </script>
 </body>
 </html>
